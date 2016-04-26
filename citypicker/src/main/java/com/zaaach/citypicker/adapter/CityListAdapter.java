@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * author zaaach on 2016/1/26.
+ *
  */
 public class CityListAdapter extends BaseAdapter implements PinnedSectionListView.PinnedSectionListAdapter {
     private static final int VIEW_TYPE_COUNT = 4;

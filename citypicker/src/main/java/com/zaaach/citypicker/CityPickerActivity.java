@@ -31,7 +31,7 @@ import com.zaaach.citypicker.view.SideLetterBar;
 import java.util.List;
 
 /**
- * author zaaach on 2016/1/26.
+ * .
  */
 public class CityPickerActivity extends AppCompatActivity implements View.OnClickListener {
     public static final int REQUEST_CODE_PICK_CITY = 2333;
