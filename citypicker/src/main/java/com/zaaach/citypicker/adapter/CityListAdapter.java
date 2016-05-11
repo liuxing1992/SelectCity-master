@@ -34,7 +34,8 @@ public class CityListAdapter extends BaseAdapter implements PinnedSectionListVie
     private List<City> mCities;
     private List<PinnedBean> mPinnedBeans;
     private HashMap<String, Integer> letterIndexes;
-    private String[] sections;
+//    private String[] sections;
+    private List<String> lists;
     private OnCityClickListener onCityClickListener;
     private int locateState = LocateState.LOCATING;
     private String locatedCity;
@@ -52,7 +53,8 @@ public class CityListAdapter extends BaseAdapter implements PinnedSectionListVie
         mCities.add(3, new City("热门", "1"));  //hot
         int size = mCities.size();
         letterIndexes = new HashMap<>();
-        sections = new String[size];
+        lists = new ArrayList<>();
+//        sections = new String[size];
         mPinnedBeans = new ArrayList<>();
         for (int index = 0; index < size; index++) {
             //当前城市拼音首字母
@@ -62,14 +64,19 @@ public class CityListAdapter extends BaseAdapter implements PinnedSectionListVie
 
             if (!TextUtils.equals(currentLetter, previousLetter)) {
                 letterIndexes.put(currentLetter, index);
-                sections[index] = currentLetter;
+//                sections[index] = currentLetter;
                 mPinnedBeans.add(new PinnedBean(PinnedBean.SECTION, currentLetter));
+                if (index > 3) {
+                    mPinnedBeans.add(new PinnedBean(PinnedBean.ITEM, mCities.get(index).getName()));
+                    lists.add(currentLetter);
+                }
+
             } else {
-                if (currentLetter.equals("定位")){
+                if (currentLetter.equals("定位")) {
                     mPinnedBeans.add(new PinnedBean(PinnedBean.LOCATE, mCities.get(index).getName()));
-                }else if (currentLetter.equals("热门")){
+                } else if (currentLetter.equals("热门")) {
                     mPinnedBeans.add(new PinnedBean(PinnedBean.HOT, mCities.get(index).getName()));
-                }else {
+                } else {
                     mPinnedBeans.add(new PinnedBean(PinnedBean.ITEM, mCities.get(index).getName()));
                 }
 
@@ -96,7 +103,17 @@ public class CityListAdapter extends BaseAdapter implements PinnedSectionListVie
      */
     public int getLetterPosition(String letter) {
         Integer integer = letterIndexes.get(letter);
-        return integer == null ? -1 : integer;
+        if (integer==null)
+            return  -1;
+        if (getIndex(letter)==-1)
+            return  integer;
+
+        return integer+getIndex(letter);
+    }
+
+    public int getIndex(String letter) {
+
+        return lists.indexOf(letter);
     }
 
     @Override
@@ -126,52 +143,52 @@ public class CityListAdapter extends BaseAdapter implements PinnedSectionListVie
 
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
-        CityViewHolder holder=null;
-        SelectHolder selectHolder=null;
-        LocateHolder locateHolder=null;
-        HotHolder hotHolder=null;
+        CityViewHolder holder = null;
+        SelectHolder selectHolder = null;
+        LocateHolder locateHolder = null;
+        HotHolder hotHolder = null;
         int viewType = getItemViewType(position);
-        if (view==null){
-            if (viewType==PinnedBean.SECTION){
-                view=inflater.inflate(R.layout.item_select,parent,false);
-                selectHolder=new SelectHolder();
-                selectHolder.select= (TextView) view.findViewById(R.id.select);
+        if (view == null) {
+            if (viewType == PinnedBean.SECTION) {
+                view = inflater.inflate(R.layout.item_select, parent, false);
+                selectHolder = new SelectHolder();
+                selectHolder.select = (TextView) view.findViewById(R.id.select);
                 view.setTag(selectHolder);
-            }else if (viewType==PinnedBean.ITEM){
-                view=inflater.inflate(R.layout.item_city_listview,parent,false);
-                holder=new CityViewHolder();
-                holder.name= (TextView) view.findViewById(R.id.tv_item_city_listview_name);
+            } else if (viewType == PinnedBean.ITEM) {
+                view = inflater.inflate(R.layout.item_city_listview, parent, false);
+                holder = new CityViewHolder();
+                holder.name = (TextView) view.findViewById(R.id.tv_item_city_listview_name);
                 view.setTag(holder);
-            }else if (viewType==PinnedBean.LOCATE){
-                view=inflater.inflate(R.layout.view_locate_city,parent,false);
-                locateHolder=new LocateHolder();
-                locateHolder.mImageView= (ImageView) view.findViewById(R.id.image);
-                locateHolder.mProgressBar= (ProgressBar) view.findViewById(R.id.city_locating_progress);
-                locateHolder.container=(ViewGroup) view.findViewById(R.id.layout_locate);
-                locateHolder.stateView= (TextView) view.findViewById(R.id.tv_located_city);
+            } else if (viewType == PinnedBean.LOCATE) {
+                view = inflater.inflate(R.layout.view_locate_city, parent, false);
+                locateHolder = new LocateHolder();
+                locateHolder.mImageView = (ImageView) view.findViewById(R.id.image);
+                locateHolder.mProgressBar = (ProgressBar) view.findViewById(R.id.city_locating_progress);
+                locateHolder.container = (ViewGroup) view.findViewById(R.id.layout_locate);
+                locateHolder.stateView = (TextView) view.findViewById(R.id.tv_located_city);
                 view.setTag(locateHolder);
-            }else if (viewType==PinnedBean.HOT){
-                view=inflater.inflate(R.layout.view_hot_city,parent,false);
-                hotHolder=new HotHolder();
-                hotHolder.mGridView= (WrapHeightGridView) view.findViewById(R.id.gridview_hot_city);
+            } else if (viewType == PinnedBean.HOT) {
+                view = inflater.inflate(R.layout.view_hot_city, parent, false);
+                hotHolder = new HotHolder();
+                hotHolder.mGridView = (WrapHeightGridView) view.findViewById(R.id.gridview_hot_city);
                 view.setTag(hotHolder);
             }
 
-        }else {
-            if (viewType==PinnedBean.SECTION){
-                selectHolder= (SelectHolder) view.getTag();
-            }else if (viewType==PinnedBean.ITEM){
-                holder= (CityViewHolder) view.getTag();
-            }else if (viewType==PinnedBean.LOCATE){
-                locateHolder= (LocateHolder) view.getTag();
-            }else if (viewType==PinnedBean.HOT){
-                hotHolder= (HotHolder) view.getTag();
+        } else {
+            if (viewType == PinnedBean.SECTION) {
+                selectHolder = (SelectHolder) view.getTag();
+            } else if (viewType == PinnedBean.ITEM) {
+                holder = (CityViewHolder) view.getTag();
+            } else if (viewType == PinnedBean.LOCATE) {
+                locateHolder = (LocateHolder) view.getTag();
+            } else if (viewType == PinnedBean.HOT) {
+                hotHolder = (HotHolder) view.getTag();
             }
         }
 
-        if (viewType==PinnedBean.SECTION){
+        if (viewType == PinnedBean.SECTION) {
             selectHolder.select.setText(mPinnedBeans.get(position).getText());
-        }else if (viewType==PinnedBean.ITEM){
+        } else if (viewType == PinnedBean.ITEM) {
             holder.name.setText(mPinnedBeans.get(position).getText());
             holder.name.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -181,9 +198,9 @@ public class CityListAdapter extends BaseAdapter implements PinnedSectionListVie
                     }
                 }
             });
-        }else if (viewType==PinnedBean.LOCATE){
+        } else if (viewType == PinnedBean.LOCATE) {
 
-            switch (locateState){
+            switch (locateState) {
                 case LocateState.LOCATING:
                     locateHolder.mProgressBar.setVisibility(View.VISIBLE);
                     locateHolder.mImageView.setVisibility(View.GONE);
@@ -218,14 +235,14 @@ public class CityListAdapter extends BaseAdapter implements PinnedSectionListVie
                 }
             });
 
-        }else if (viewType==PinnedBean.HOT){
+        } else if (viewType == PinnedBean.HOT) {
 
             final HotCityGridAdapter hotCityGridAdapter = new HotCityGridAdapter(mContext);
             hotHolder.mGridView.setAdapter(hotCityGridAdapter);
             hotHolder.mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (onCityClickListener != null){
+                    if (onCityClickListener != null) {
                         onCityClickListener.onCityClick(hotCityGridAdapter.getItem(position));
                     }
                 }
@@ -249,14 +266,14 @@ public class CityListAdapter extends BaseAdapter implements PinnedSectionListVie
         TextView select;
     }
 
-    public static class LocateHolder{
+    public static class LocateHolder {
         TextView stateView;
         ViewGroup container;
         ProgressBar mProgressBar;
         ImageView mImageView;
     }
 
-    public static class HotHolder{
+    public static class HotHolder {
         WrapHeightGridView mGridView;
     }
 

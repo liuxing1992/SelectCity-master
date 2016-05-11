@@ -93,6 +93,7 @@ public class CityPickerActivity extends AppCompatActivity implements View.OnClic
         dbManager = new DBManager(this);
         dbManager.copyDBFile();
         mAllCities = dbManager.getAllCities();
+
         mCityAdapter = new CityListAdapter(this, mAllCities);
         mCityAdapter.setOnCityClickListener(new CityListAdapter.OnCityClickListener() {
             @Override
